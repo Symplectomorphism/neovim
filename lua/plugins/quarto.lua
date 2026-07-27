@@ -79,6 +79,23 @@ return {
     end,
   },
 
+  { -- Jupytext: transparently edit .ipynb files as Quarto markdown, synced
+    -- back to .ipynb on save via the `jupytext` CLI (pip install --user jupytext).
+    -- Python cells get filetype=quarto, so the run-cell keymaps above (rc/rl/rA/r)
+    -- work on .ipynb files the same way they already do on .qmd files.
+    'GCBallesteros/jupytext.nvim',
+    lazy = false,
+    opts = {
+      custom_language_formatting = {
+        python = {
+          extension = 'qmd',
+          style = 'quarto',
+          force_ft = 'quarto',
+        },
+      },
+    },
+  },
+
   { -- Image Rendering
     '3rd/image.nvim',
     opts = {
