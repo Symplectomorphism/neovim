@@ -3,6 +3,15 @@
 # Review before running. Assumes sudo access and outbound internet (direct or proxied).
 set -euo pipefail
 
+# Run as your normal user, not root/sudo — the individual commands below that
+# need root already have `sudo` on them. Running the whole script under sudo
+# resets $HOME to /root, so Julia/git-clone/etc. end up in root's home instead
+# of yours (and root has no SSH key for your GitHub account).
+if [ "$EUID" -eq 0 ]; then
+  echo "Don't run this script as root/sudo — it sudo's individual commands as needed. Run it as your normal user." >&2
+  exit 1
+fi
+
 # --- 1. Neovim itself -------------------------------------------------------
 # RHEL9/EPEL's neovim package usually lags behind; this config needs >=0.11
 # for vim.lsp.config()/vim.lsp.enable(). Use the official portable release
@@ -17,27 +26,48 @@ echo 'export PATH="/opt/nvim/bin:$PATH"' | sudo tee /etc/profile.d/nvim.sh
 # --- 2. Build tools + libs used by plugin installs/parsers -----------------
 sudo dnf groupinstall -y "Development Tools"
 sudo dnf install -y git curl unzip tar gcc make
+# readline/ncurses headers: needed to build Lua 5.1 (via hererocks/luarocks,
+# for lazy.nvim's rocks support used by image.nvim etc.)
+sudo dnf install -y readline-devel ncurses-devel
 
 # ripgrep (required by Telescope live_grep) and fd (optional, faster find)
 sudo dnf install -y epel-release || true
 sudo dnf install -y ripgrep fd-find
 
-# --- 3. Node.js (Copilot, tree-sitter-cli, ts_ls/html/cssls/jsonls) --------
+# --- 3. Node.js (Copilot, ts_ls/html/cssls/jsonls) --------------------------
 sudo dnf module reset -y nodejs || true
 sudo dnf module enable -y nodejs:20
 sudo dnf install -y nodejs npm
 
-# --- 4. tree-sitter CLI (needed by nvim-treesitter's main-branch installer) -
-npm install -g tree-sitter-cli
-
-# --- 5. clangd (C++/C LSP) ---------------------------------------------------
+# --- 4. clangd (C++/C LSP) ---------------------------------------------------
 # Needs CRB (CodeReady Builder) or EPEL depending on RHEL minor version.
+# Also pulls in clang-resource-filesystem (libclang's builtin headers), which
+# step 5 below needs already present.
 sudo dnf config-manager --set-enabled crb || true
 sudo dnf install -y clang-tools-extra || echo "clang-tools-extra not found — check 'dnf search clangd' manually"
 
+# --- 5. tree-sitter CLI (needed by nvim-treesitter's main-branch installer) -
+# npm's tree-sitter-cli ships a prebuilt binary linked against a newer glibc
+# than RHEL9 has (needs 2.39; RHEL9 ships 2.34), so `npm install -g` produces
+# a binary that fails at runtime with GLIBC version errors. Build it from
+# source with cargo instead, which links against the system's own glibc.
+# One of its deps (rquickjs-sys) uses bindgen, which needs libclang to find
+# its builtin headers (stdbool.h etc, shipped by clang-resource-filesystem,
+# installed above). RHEL9/EPEL don't package a standalone `clang` driver
+# binary, so libclang can't auto-detect its own resource-dir the way it would
+# if `clang` were on PATH — point it there explicitly instead.
+export BINDGEN_EXTRA_CLANG_ARGS="-resource-dir=/usr/lib/clang/21"
+if ! command -v cargo >/dev/null 2>&1; then
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  source "$HOME/.cargo/env"
+fi
+cargo install tree-sitter-cli
+
 # --- 6. Julia (juliaup) -----------------------------------------------------
 curl -fsSL https://install.julialang.org | sh -s -- --yes
-# Reload shell / source juliaup env before continuing, then:
+# juliaup only patches .bashrc/.bash_profile for *new* shells; export it here
+# too so the rest of this script (still the same process) can see `julia`.
+export PATH="$HOME/.juliaup/bin:$PATH"
 julia --project="$HOME/.julia/environments/nvim-lspconfig" -e \
   'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
 julia -e 'using Pkg; Pkg.add("JuliaFormatter")'
