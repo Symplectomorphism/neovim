@@ -1,10 +1,10 @@
-\documentclass[9pt]{extarticle}
+\documentclass[14pt]{extarticle}
 
 \usepackage{fontspec}
 \setmainfont{Fira Sans}
 \setmonofont{DejaVu Sans Mono}[Scale=0.85]
 
-\usepackage[letterpaper,left=1.2cm,right=1.2cm,top=0.8cm,bottom=0.8cm]{geometry}
+\usepackage[letterpaper,left=1.1cm,right=1.1cm,top=0.6cm,bottom=0.6cm]{geometry}
 \usepackage{multicol}
 \usepackage{xcolor}
 \usepackage{enumitem}
@@ -15,16 +15,16 @@
 \definecolor{accent}{HTML}{2F5C8A}
 \definecolor{note}{gray}{0.35}
 
-\newcommand{\key}[1]{\colorbox{keybg}{\ttfamily\footnotesize\mbox{#1}}}
+\newcommand{\key}[1]{\colorbox{keybg}{\ttfamily\small\mbox{#1}}}
 
-\titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
-\titlespacing{\section}{0pt}{6pt}{3pt}
+\titleformat{\section}{\Large\bfseries\color{accent}}{}{0pt}{}
+\titlespacing{\section}{0pt}{5pt}{2pt}
 \titleformat{\subsection}{\bfseries\color{accent!80!black}}{}{0pt}{}
-\titlespacing{\subsection}{0pt}{4pt}{2pt}
+\titlespacing{\subsection}{0pt}{3pt}{2pt}
 
-\setlist[description]{leftmargin=2.3cm, labelindent=0pt, itemsep=1pt, parsep=0pt, topsep=1pt, font=\normalfont}
+\setlist[description]{leftmargin=3.4cm, labelindent=0pt, itemsep=0.5pt, parsep=0pt, topsep=1pt, font=\normalfont}
 
-\setlength{\columnsep}{0.8cm}
+\setlength{\columnsep}{0.9cm}
 \setlength{\columnseprule}{0.4pt}
 \def\columnseprulecolor{\color{black!15}}
 
@@ -33,10 +33,10 @@
 \begin{document}
 
 \begin{center}
-  {\Large\bfseries\color{accent} Neovim Daily Keybind Reference}\\[2pt]
-  {\small\color{note} \texttt{leader} = \texttt{localleader} = \key{Space}\quad$\cdot$\quad generated from \texttt{\textasciitilde/.config/nvim}}
+  {\huge\bfseries\color{accent} Neovim Daily Keybind Reference}\\[4pt]
+  {\color{note} \texttt{leader} = \texttt{localleader} = \key{Space}\quad$\cdot$\quad generated from \texttt{\textasciitilde/.config/nvim}}
 \end{center}
-\vspace{4pt}
+\vspace{3pt}
 
 \begin{multicols}{2}
 
@@ -53,6 +53,20 @@
   \item[\key{sd'}] Surround Delete \texttt{'}
   \item[\key{sr)'}] Surround Replace \texttt{)} with \texttt{'}
   \item[\key{va)} / \key{ci'}] Select / change around-or-inside a text object
+  \item[\key{\textbackslash}] Reveal current file in neo-tree
+\end{description}
+
+\section{Built-in Essentials}
+\begin{description}
+  \item[\key{u} / \key{C-r}] Undo / redo
+  \item[\key{.}] Repeat last change
+  \item[\key{C-v}] Visual block mode (column edits)
+  \item[\key{qa ... q}] Record macro to register \texttt{a}
+  \item[\key{\@a}] Play macro from register \texttt{a}
+  \item[\key{ma} / \key{`a}] Set mark \texttt{a} / jump to mark \texttt{a}
+  \item[\key{J}] Join line below with a space
+  \item[\key{C-w s} / \key{C-w v}] Split window horizontally / vertically
+  \item[\key{C-w q}] Close current window
 \end{description}
 
 \section{Search (Telescope) --- \key{leader s...}}
@@ -116,7 +130,7 @@
   \item[\key{leader B}] Conditional breakpoint
   \item[\key{F7}] Toggle debugger UI
 \end{description}
-{\footnotesize\color{note} First use in a session loads the plugin and may pause briefly while Mason finishes registering.}
+{\small\color{note} First use in a session loads the plugin and may pause briefly while Mason finishes registering.}
 
 \section{Julia REPL (iron.nvim) --- \texttt{.jl} files}
 \begin{description}
@@ -132,7 +146,7 @@
   \item[\key{localleader sq}] Exit REPL
   \item[\key{localleader scl}] Clear REPL
 \end{description}
-{\footnotesize\color{note} Real terminal REPL: Pkg mode \texttt{]}, help \texttt{?}, shell \texttt{;}, and OhMyREPL all work natively.}
+{\small\color{note} Real terminal REPL: Pkg mode \texttt{]}, help \texttt{?}, shell \texttt{;}, and OhMyREPL all work natively.}
 
 \section{Git Hunks (gitsigns)}
 \begin{description}
@@ -162,7 +176,7 @@
   \item[\key{aa} / \key{ad}] Accept / deny Claude's diff
   \item[\key{ag}] Toggle Antigravity CLI (\texttt{agy})
 \end{description}
-{\footnotesize\color{note} After a Claude/Antigravity window gains focus you're dropped into terminal mode --- \key{Esc Esc} to leave it, \key{i} to resume typing to it.}
+{\small\color{note} After a Claude/Antigravity window gains focus you're dropped into terminal mode --- \key{Esc Esc} to leave it, \key{i} to resume typing to it.}
 
 \section{Quarto / Molten --- \texttt{.qmd} notebooks}
 \begin{description}
