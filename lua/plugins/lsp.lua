@@ -159,5 +159,18 @@ return {
         end,
       },
     }
+
+    -- Servers that aren't installed via Mason (managed by the language's own
+    -- package manager / already on PATH) get configured directly.
+    local system_servers = {
+      -- julials expects LanguageServer.jl installed in ~/.julia/environments/nvim-lspconfig:
+      --   julia --project=~/.julia/environments/nvim-lspconfig -e \
+      --     'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
+      julials = {},
+    }
+    for name, cfg in pairs(system_servers) do
+      cfg.capabilities = vim.tbl_deep_extend('force', {}, capabilities, cfg.capabilities or {})
+      require('lspconfig')[name].setup(cfg)
+    end
   end,
 }

@@ -15,6 +15,7 @@ return { -- Highlight, edit, and navigate code
       'markdown_inline',
       'latex',
       'python',
+      'julia',
     }
 
     -- Only installs parsers that are missing
