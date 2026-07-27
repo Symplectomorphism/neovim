@@ -1,0 +1,180 @@
+\documentclass[9pt]{extarticle}
+
+\usepackage{fontspec}
+\setmainfont{Fira Sans}
+\setmonofont{DejaVu Sans Mono}[Scale=0.85]
+
+\usepackage[a4paper,margin=1.2cm]{geometry}
+\usepackage{multicol}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{parskip}
+
+\definecolor{keybg}{gray}{0.90}
+\definecolor{accent}{HTML}{2F5C8A}
+\definecolor{note}{gray}{0.35}
+
+\newcommand{\key}[1]{\colorbox{keybg}{\ttfamily\footnotesize\mbox{#1}}}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0pt}{}
+\titlespacing{\section}{0pt}{6pt}{3pt}
+\titleformat{\subsection}{\bfseries\color{accent!80!black}}{}{0pt}{}
+\titlespacing{\subsection}{0pt}{4pt}{2pt}
+
+\setlist[description]{leftmargin=2.3cm, labelindent=0pt, itemsep=1pt, parsep=0pt, topsep=1pt, font=\normalfont}
+
+\setlength{\columnsep}{0.8cm}
+\setlength{\columnseprule}{0.4pt}
+\def\columnseprulecolor{\color{black!15}}
+
+\pagenumbering{gobble}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries\color{accent} Neovim Daily Keybind Reference}\\[2pt]
+  {\small\color{note} \texttt{leader} = \texttt{localleader} = \key{Space}\quad$\cdot$\quad generated from \texttt{\textasciitilde/.config/nvim}}
+\end{center}
+\vspace{4pt}
+
+\begin{multicols}{2}
+
+\section{General \& Navigation}
+\begin{description}
+  \item[\key{Esc}] Clear search highlight
+  \item[\key{Esc Esc}] Leave terminal mode (Claude, Antigravity, any \texttt{:terminal})
+  \item[\key{C-h/j/k/l}] Move focus between window splits
+  \item[\key{C-o} / \key{C-i}] Jump back / forward (after \key{grd}, searches, etc.)
+  \item[\key{leader q}] Diagnostics to quickfix list
+  \item[\key{zR} / \key{zM}] Open / close all folds
+  \item[\key{za} / \key{zo} / \key{zc}] Toggle / open / close fold under cursor
+  \item[\key{saiw)}] Surround Add Inner Word with \texttt{)}
+  \item[\key{sd'}] Surround Delete \texttt{'}
+  \item[\key{sr)'}] Surround Replace \texttt{)} with \texttt{'}
+  \item[\key{va)} / \key{ci'}] Select / change around-or-inside a text object
+\end{description}
+
+\section{Search (Telescope) --- \key{leader s...}}
+\begin{description}
+  \item[\key{sf}] Find files
+  \item[\key{sg}] Live grep
+  \item[\key{sw}] Grep word under cursor
+  \item[\key{sd}] Search diagnostics
+  \item[\key{sh}] Search help
+  \item[\key{sk}] Search keymaps
+  \item[\key{ss}] Search Telescope pickers
+  \item[\key{sr}] Resume last search
+  \item[\key{s.}] Recent files
+  \item[\key{s/}] Grep in open files only
+  \item[\key{sn}] Find files in nvim config
+  \item[\key{leader leader}] Find open buffers
+  \item[\key{leader /}] Fuzzy search current buffer
+\end{description}
+
+\section{LSP}
+\begin{description}
+  \item[\key{K}] Hover docs
+  \item[\key{grn}] Rename
+  \item[\key{gra}] Code action
+  \item[\key{grr}] References
+  \item[\key{gri}] Go to implementation
+  \item[\key{grd}] Go to definition
+  \item[\key{grD}] Go to declaration
+  \item[\key{grt}] Go to type definition
+  \item[\key{gO} / \key{gW}] Document / workspace symbols
+  \item[\key{leader th}] Toggle inlay hints
+\end{description}
+
+\section{Completion (blink.cmp) --- insert mode}
+\begin{description}
+  \item[\key{Tab} / \key{S-Tab}] Snippet jump forward / back
+  \item[\key{C-y}] Accept completion
+  \item[\key{C-n} / \key{C-p}] Next / previous item
+  \item[\key{C-space}] Open menu / docs
+  \item[\key{C-e}] Dismiss menu
+  \item[\key{C-k}] Toggle signature help
+\end{description}
+
+\section{Copilot --- ghost text, insert mode}
+\begin{description}
+  \item[\key{M-l}] Accept suggestion
+  \item[\key{M-]} / \key{M-[}] Next / previous suggestion
+  \item[\key{C-]}] Dismiss suggestion
+\end{description}
+
+\section{Formatting}
+\begin{description}
+  \item[\key{leader f}] Format buffer (conform.nvim; runs on save too)
+\end{description}
+
+\section{Debugging (nvim-dap) --- Python \& C++}
+\begin{description}
+  \item[\key{F5}] Continue / start
+  \item[\key{F1} / \key{F2} / \key{F3}] Step into / over / out
+  \item[\key{leader b}] Toggle breakpoint
+  \item[\key{leader B}] Conditional breakpoint
+  \item[\key{F7}] Toggle debugger UI
+\end{description}
+{\footnotesize\color{note} First use in a session loads the plugin and may pause briefly while Mason finishes registering.}
+
+\section{Julia REPL (iron.nvim) --- \texttt{.jl} files}
+\begin{description}
+  \item[\key{localleader is}] Open REPL
+  \item[\key{localleader ir}] Restart REPL
+  \item[\key{localleader if}] Focus REPL
+  \item[\key{localleader ih}] Hide REPL
+  \item[\key{localleader sl}] Send line
+  \item[\key{localleader sp}] Send paragraph
+  \item[\key{localleader sc}] Send selection / motion
+  \item[\key{localleader sf}] Send whole file
+  \item[\key{localleader su}] Send until cursor
+  \item[\key{localleader sq}] Exit REPL
+  \item[\key{localleader scl}] Clear REPL
+\end{description}
+{\footnotesize\color{note} Real terminal REPL: Pkg mode \texttt{]}, help \texttt{?}, shell \texttt{;}, and OhMyREPL all work natively.}
+
+\section{Git Hunks (gitsigns)}
+\begin{description}
+  \item[\key{]c} / \key{[c}] Next / previous hunk
+  \item[\key{leader hs}] Stage hunk (visual: stage selection)
+  \item[\key{leader hr}] Reset hunk (visual: reset selection)
+  \item[\key{leader hS}] Stage whole buffer
+  \item[\key{leader hR}] Reset whole buffer
+  \item[\key{leader hu}] Undo last stage
+  \item[\key{leader hp}] Preview hunk diff
+  \item[\key{leader hb}] Blame current line
+  \item[\key{leader hd}] Diff file against index
+  \item[\key{leader hD}] Diff file against last commit
+  \item[\key{leader tb}] Toggle inline blame
+  \item[\key{leader tD}] Toggle inline preview of deleted lines
+\end{description}
+
+\section{AI Agents --- \key{leader a}}
+\begin{description}
+  \item[\key{ac}] Toggle Claude Code
+  \item[\key{af}] Focus Claude (smart toggle)
+  \item[\key{ar}] Resume Claude session
+  \item[\key{aC}] Continue Claude session
+  \item[\key{am}] Select Claude model
+  \item[\key{ab}] Add current buffer to context
+  \item[\key{as}] Send selection (visual) / add file (tree)
+  \item[\key{aa} / \key{ad}] Accept / deny Claude's diff
+  \item[\key{ag}] Toggle Antigravity CLI (\texttt{agy})
+\end{description}
+{\footnotesize\color{note} After a Claude/Antigravity window gains focus you're dropped into terminal mode --- \key{Esc Esc} to leave it, \key{i} to resume typing to it.}
+
+\section{Quarto / Molten --- \texttt{.qmd} notebooks}
+\begin{description}
+  \item[\key{localleader rc}] Run cell
+  \item[\key{localleader rl}] Run line
+  \item[\key{localleader rA}] Run all cells
+  \item[\key{localleader r}] (visual) Run range
+  \item[\key{localleader mi} / \key{md}] Init / stop Molten kernel
+  \item[\key{localleader mp}] Image popup
+  \item[\key{localleader mb}] Open output in browser
+  \item[\key{localleader mh} / \key{ms}] Hide / show output
+\end{description}
+
+\end{multicols}
+\end{document}
