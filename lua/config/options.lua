@@ -36,3 +36,7 @@ vim.o.inccommand = 'split'
 vim.o.cursorline = true
 vim.o.scrolloff = 10
 vim.o.confirm = true
+
+-- Treesitter folding (lua/plugins/treesitter.lua) is available but shouldn't
+-- start files pre-collapsed; foldlevel's default of 0 does exactly that.
+vim.o.foldlevel = 99
