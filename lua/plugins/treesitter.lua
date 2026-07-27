@@ -16,6 +16,7 @@ return { -- Highlight, edit, and navigate code
       'latex',
       'python',
       'julia',
+      'cpp',
     }
 
     -- Only installs parsers that are missing

@@ -163,5 +163,8 @@ return {
     --   julia --project=~/.julia/environments/nvim-lspconfig -e \
     --     'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
     vim.lsp.enable 'julials'
+
+    -- clangd: installed system-wide via pacman
+    vim.lsp.enable 'clangd'
   end,
 }
