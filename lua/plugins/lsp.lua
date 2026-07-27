@@ -106,13 +106,14 @@ return {
     }
 
     -- blink.cmp gives Neovim more completion capabilities than the LSP spec
-    -- defaults to; broadcast those to the servers.
-    local capabilities = require('blink.cmp').get_lsp_capabilities()
+    -- defaults to. '*' is merged into every server config (:help lsp-config-merge).
+    vim.lsp.config('*', {
+      capabilities = require('blink.cmp').get_lsp_capabilities(),
+    })
 
-    -- Add/remove LSPs here. They are auto-installed via Mason below.
+    -- Add/remove LSPs here. They are auto-installed + auto-enabled via Mason below.
     -- :help lspconfig-all for the full list of pre-configured servers.
     local servers = {
-      -- clangd = {},
       -- gopls = {},
       pyright = {},
       ruff = {},
@@ -139,38 +140,28 @@ return {
         },
       },
     }
+    for name, cfg in pairs(servers) do
+      vim.lsp.config(name, cfg)
+    end
 
     -- :Mason to check status / manually install tools
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {
-      'stylua', -- Lua formatter
-      'tex-fmt',
-    })
-    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+    require('mason-tool-installer').setup {
+      ensure_installed = { 'stylua', 'tex-fmt' }, -- non-LSP tools; servers are handled by mason-lspconfig below
+    }
 
+    -- Installs + auto-enables (vim.lsp.enable) each server via Mason
     require('mason-lspconfig').setup {
-      ensure_installed = {}, -- installs are handled by mason-tool-installer above
-      automatic_installation = false,
-      handlers = {
-        function(server_name)
-          local server = servers[server_name] or {}
-          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-          require('lspconfig')[server_name].setup(server)
-        end,
-      },
+      ensure_installed = vim.tbl_keys(servers),
     }
 
     -- Servers that aren't installed via Mason (managed by the language's own
-    -- package manager / already on PATH) get configured directly.
-    local system_servers = {
-      -- julials expects LanguageServer.jl installed in ~/.julia/environments/nvim-lspconfig:
-      --   julia --project=~/.julia/environments/nvim-lspconfig -e \
-      --     'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
-      julials = {},
-    }
-    for name, cfg in pairs(system_servers) do
-      cfg.capabilities = vim.tbl_deep_extend('force', {}, capabilities, cfg.capabilities or {})
-      require('lspconfig')[name].setup(cfg)
-    end
+    -- package manager / already on PATH). nvim-lspconfig still ships their
+    -- default cmd/filetypes/root_markers via lsp/<name>.lua, so no config
+    -- override is needed here, just enable them.
+    --
+    -- julials expects LanguageServer.jl installed in ~/.julia/environments/nvim-lspconfig:
+    --   julia --project=~/.julia/environments/nvim-lspconfig -e \
+    --     'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
+    vim.lsp.enable 'julials'
   end,
 }
