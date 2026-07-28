@@ -57,6 +57,10 @@ return {
     dependencies = { '3rd/image.nvim' },
     init = function()
       vim.g.python3_host_prog = vim.fn.expand '~/.virtualenvs/neovim/bin/python'
+      -- jupytext.nvim shells out to a bare `jupytext`; it's only installed in
+      -- this venv, so make it resolvable to Neovim's own subprocesses without
+      -- touching the login shell's PATH.
+      vim.env.PATH = vim.fn.expand '~/.virtualenvs/neovim/bin' .. ':' .. vim.env.PATH
       vim.g.molten_image_provider = 'image.nvim'
       -- vim.g.molten_output_win_max_height = 20
       vim.g.molten_auto_open_output = true
@@ -79,21 +83,27 @@ return {
     end,
   },
 
-  { -- Jupytext: transparently edit .ipynb files as Quarto markdown, synced
-    -- back to .ipynb on save via the `jupytext` CLI (pip install --user jupytext).
-    -- Python cells get filetype=quarto, so the run-cell keymaps above (rc/rl/rA/r)
-    -- work on .ipynb files the same way they already do on .qmd files.
+  { -- Jupytext: transparently edit .ipynb files, synced back to .ipynb on
+    -- save via the `jupytext` CLI (installed in the ~/.virtualenvs/neovim venv).
+    --
+    -- NOTE: this used to force python cells into quarto-style (.qmd, ft=quarto)
+    -- so the run-cell keymaps above (rc/rl/rA/r) would work on .ipynb files too.
+    -- That path has a real jupytext.nvim bug: its read function inserts a fake
+    -- blank line 1 into the buffer as an undo-history workaround, and the write
+    -- path never strips it back out before shelling out to `jupytext --to=ipynb`,
+    -- which (for the quarto style specifically, since it round-trips through the
+    -- external `quarto` CLI) corrupts the regenerated YAML frontmatter on any
+    -- edited save. Verified reproducible; not fixed upstream as of writing.
+    --
+    -- Falling back to jupytext's default style ("hydrogen": .py with `# %%` cell
+    -- markers, converted by jupytext's own Python code, no external `quarto` CLI
+    -- involved) avoids that code path entirely. Trade-off: .ipynb buffers now
+    -- get ft=python, not ft=quarto, so rc/rl/rA no longer bind on them -- use
+    -- Molten's own :MoltenEvaluateLine / :MoltenEvaluateOperator / :MoltenEvaluateVisual
+    -- directly instead. Native .qmd files are unaffected either way.
     'GCBallesteros/jupytext.nvim',
     lazy = false,
-    opts = {
-      custom_language_formatting = {
-        python = {
-          extension = 'qmd',
-          style = 'quarto',
-          force_ft = 'quarto',
-        },
-      },
-    },
+    opts = {},
   },
 
   { -- Image Rendering
