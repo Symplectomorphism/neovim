@@ -72,7 +72,29 @@ julia --project="$HOME/.julia/environments/nvim-lspconfig" -e \
   'using Pkg; Pkg.add(["LanguageServer", "SymbolServer", "StaticLint"])'
 julia -e 'using Pkg; Pkg.add("JuliaFormatter")'
 
-# --- 7. Clone the Neovim config ---------------------------------------------
+# --- 7. Python toolchain for Molten/Jupyter (pynvim, ipykernel, jupytext) ---
+# Uses uv to manage its own isolated Python build (same as the home machine),
+# sidestepping RHEL9's older/different system Python entirely — the venv ends
+# up bit-for-bit equivalent regardless of what `python3` resolves to on the OS.
+if ! command -v uv >/dev/null 2>&1; then
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.local/bin:$PATH"
+fi
+uv venv --python 3.13 "$HOME/.virtualenvs/neovim"
+uv pip install --python "$HOME/.virtualenvs/neovim/bin/python" pynvim jupyter_client ipykernel jupytext
+# Register a `python3` Jupyter kernel so Molten (:MoltenInit python3) has
+# something to attach to — installing ipykernel doesn't register one by itself.
+"$HOME/.virtualenvs/neovim/bin/python" -m ipykernel install --user --name python3 --display-name "Python 3"
+
+# Best-effort, neither is packaged for RHEL9/EPEL:
+# - ueberzugpp: image.nvim's backend for inline Molten plot/image rendering.
+# - quarto: only needed for quarto-nvim's :Quarto* build/preview commands —
+#   .ipynb editing itself no longer depends on it (see quarto.lua's jupytext
+#   section for why).
+command -v ueberzugpp >/dev/null 2>&1 || echo "NOTE: ueberzugpp not found — inline Molten images/plots won't render. See https://github.com/jstkdng/ueberzugpp"
+command -v quarto >/dev/null 2>&1 || echo "NOTE: quarto CLI not found — :Quarto* build/preview commands won't work. See https://quarto.org/docs/get-started/"
+
+# --- 8. Clone the Neovim config ---------------------------------------------
 # This script lives inside that same repo (scripts/rhel9_bootstrap.sh), so if
 # you're running it from a clone you already have, this is a no-op.
 # Private repo: use SSH (needs a key from this machine added to GitHub) or
@@ -81,7 +103,7 @@ if [ ! -d "$HOME/.config/nvim/.git" ]; then
   git clone git@github.com:Symplectomorphism/neovim.git "$HOME/.config/nvim"
 fi
 
-# --- 8. First launch ---------------------------------------------------------
+# --- 9. First launch ---------------------------------------------------------
 # Run `nvim` once and wait: lazy.nvim installs plugins at the exact versions
 # pinned in lazy-lock.json, then mason-tool-installer/mason-lspconfig pull
 # pyright/ruff/texlab/html/cssls/jsonls/lua_ls/stylua/tex-fmt/debugpy/codelldb.
