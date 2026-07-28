@@ -1,6 +1,11 @@
 -- Leader keys must be set before lazy.nvim loads plugins/keymaps
+-- Deliberately different keys: localleader-prefixed mappings (iron.nvim,
+-- quarto/molten) are meant to be a separate namespace from leader-prefixed
+-- ones. Sharing Space for both meant <localleader>X and <leader>X were the
+-- literal same keystroke, causing a real collision (iron.nvim's send_file
+-- silently losing to Telescope's find_files depending on plugin load order).
 vim.g.mapleader = ' '
-vim.g.maplocalleader = ' '
+vim.g.maplocalleader = ','
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
