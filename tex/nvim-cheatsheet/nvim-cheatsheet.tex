@@ -148,6 +148,25 @@
 \end{description}
 {\small\color{note} Real terminal REPL: Pkg mode \texttt{]}, help \texttt{?}, shell \texttt{;}, and OhMyREPL all work natively.}
 
+\section{Python REPL (iron.nvim) --- \texttt{.py} files}
+\begin{description}
+  \item[\key{localleader is}] Open REPL (ipython)
+  \item[\key{localleader ir}] Restart REPL
+  \item[\key{localleader if}] Focus REPL (from code) / jump back (from REPL)
+  \item[\key{localleader ih}] Hide REPL
+  \item[\key{localleader sl}] Send line
+  \item[\key{localleader sp}] Send paragraph
+  \item[\key{localleader sc}] Send selection / motion
+  \item[\key{localleader sb}] Send cell/block (between \texttt{\# \%\%} markers)
+  \item[\key{localleader sf}] Send whole file
+  \item[\key{localleader su}] Send until cursor
+  \item[\key{localleader sq}] Exit REPL
+  \item[\key{localleader scl}] Clear REPL
+  \item[\key{localleader rr}] Run file non-interactively (floating term)
+  \item[\key{]]} / \key{[[}] Next / previous cell (\texttt{\# \%\%} marker)
+\end{description}
+{\small\color{note} \texttt{\# \%\%} cells are the Jupytext/VS Code "percent format" --- same convention \texttt{.ipynb} files already round-trip through. \key{localleader rr} is a one-shot run, separate from the REPL. Both auto-detect a project \texttt{.venv} (e.g. \texttt{uv venv}), walking up from the file, and fall back to the global interpreter if none is found.}
+
 \section{Git Hunks (gitsigns)}
 \begin{description}
   \item[\key{]c} / \key{[c}] Next / previous hunk
@@ -189,7 +208,7 @@
   \item[\key{localleader mb}] Open output in browser
   \item[\key{localleader mh} / \key{ms}] Hide / show output
 \end{description}
-{\small\color{note} \texttt{.ipynb} opens via jupytext as \texttt{ft=python} (\texttt{\# \%\%} cells), \emph{not} quarto --- rc/rl/rA don't bind there. Use \texttt{:MoltenEvaluateLine}/\texttt{Operator}/\texttt{Visual} directly instead.}
+{\small\color{note} \texttt{.ipynb} opens via jupytext as \texttt{ft=python} (\texttt{\# \%\%} cells), \emph{not} quarto --- rc/rl/rA don't bind there. Use \texttt{:MoltenEvaluateLine}/\texttt{Operator}/\texttt{Visual} for kernel output with plots, or the Python REPL section's \key{localleader sb}/\key{sc}/etc. (iron.nvim) for plain-text ipython output.}
 
 \end{multicols}
 \end{document}
