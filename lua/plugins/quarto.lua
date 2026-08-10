@@ -45,6 +45,8 @@ return {
           map('n', '<localleader>rl', runner.run_line, 'Quarto: run line')
           map('n', '<localleader>rA', runner.run_all, 'Quarto: run all cells')
           map('v', '<localleader>r', runner.run_range, 'Quarto: run visual range')
+          map('n', '<localleader>qp', ':QuartoPreview<CR>', 'Quarto: preview site')
+          map('n', '<localleader>qq', ':QuartoClosePreview<CR>', 'Quarto: close preview')
         end,
       })
     end,

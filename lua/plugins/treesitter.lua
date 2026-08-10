@@ -4,6 +4,13 @@ return { -- Highlight, edit, and navigate code
   lazy = false,
   build = ':TSUpdate',
   config = function()
+    -- nvim-treesitter shells out to a bare `tree-sitter` to compile parsers.
+    -- ~/.npm-global/bin/tree-sitter is a prebuilt binary linked against a
+    -- newer glibc than this system ships, so it fails at runtime; the
+    -- ~/.cargo/bin/tree-sitter build is compiled locally and works. Put it
+    -- first so nvim's own subprocesses resolve to the working one.
+    vim.env.PATH = vim.fn.expand '~/.cargo/bin' .. ':' .. vim.env.PATH
+
     require('nvim-treesitter').setup {}
 
     -- 'c', 'lua', 'vim', 'vimdoc', 'query', 'diff' are built into Neovim now
@@ -17,6 +24,7 @@ return { -- Highlight, edit, and navigate code
       'python',
       'julia',
       'cpp',
+      'yaml',
     }
 
     -- Only installs parsers that are missing

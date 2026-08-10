@@ -37,6 +37,9 @@ vim.o.splitbelow = true
 vim.o.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
+-- Visual guides at 80 (soft target) and 120 (hard ceiling)
+vim.o.colorcolumn = '80,120'
+
 vim.o.inccommand = 'split'
 vim.o.cursorline = true
 vim.o.scrolloff = 10
