@@ -7,6 +7,8 @@ return { -- GitHub Copilot: inline ghost-text suggestions
       auto_trigger = true,
       keymap = {
         accept = '<M-l>',
+        accept_word = '<M-w>',
+        accept_line = '<M-j>',
         next = '<M-]>',
         prev = '<M-[>',
         dismiss = '<C-]>',

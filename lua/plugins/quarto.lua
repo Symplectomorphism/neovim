@@ -37,6 +37,21 @@ return {
       vim.api.nvim_create_autocmd('FileType', {
         pattern = { 'quarto' }, -- add 'markdown' too if you want in .md
         callback = function(ev)
+          -- `:QuartoPreview` shells out to `quarto`, whose filters (e.g.
+          -- shinylive.lua) further shell out to bare commands like
+          -- `shinylive` resolved via PATH. Neovim doesn't auto-activate a
+          -- project .venv, so prepend its bin/ here -- mirrors the
+          -- molten-nvim PATH prepend below for jupytext. Manipulating
+          -- vim.env.PATH directly (rather than sourcing activate/
+          -- activate.fish) keeps this shell-agnostic across machines.
+          local python = require('util.python').venv_bin 'python'
+          if python then
+            local bin = vim.fn.fnamemodify(python, ':h')
+            if not vim.env.PATH:find(bin, 1, true) then
+              vim.env.PATH = bin .. ':' .. vim.env.PATH
+            end
+          end
+
           local runner = require 'quarto.runner'
           local function map(mode, lhs, rhs, desc)
             vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf, silent = true, desc = desc })
